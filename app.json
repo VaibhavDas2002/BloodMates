@@ -1,7 +1,12 @@
 {
   "expo": {
+<<<<<<< HEAD
     "name": "BloodMates",
     "slug": "BloodMates",
+=======
+    "name": "BloodDonate",
+    "slug": "BloodDonate",
+>>>>>>> 91ebe4094e70c5b031806ce52d240dffcccb92bd
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",

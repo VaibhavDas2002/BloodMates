@@ -9,6 +9,7 @@ import {
     Register,
     ResetPassword,
     SuccessVerification,
+    ChatComponent,
 } from './screens'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'

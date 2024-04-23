@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "971781257208",
+    "project_id": "bloodmates-a3411",
+    "storage_bucket": "bloodmates-a3411.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:971781257208:android:3a486567f4d37c7f0b080d",
+        "android_client_info": {
+          "package_name": "com.vmw.bloodmates"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8AdFA4SviEE2P66XPj4S7V-xyPP09kDQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -24,7 +24,7 @@ const Done = ({ ...props }) => (
         }}
         {...props}
     >
-        <Text style={{ color: '#ff2156' }}>Done</Text>
+        <Text style={{ color: '#ff2156' }}>Doneee</Text>
     </TouchableOpacity>
 )
 

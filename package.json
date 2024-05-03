@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-  "name": "BloodMates",
-=======
   "name": "blooddonate",
->>>>>>> 91ebe4094e70c5b031806ce52d240dffcccb92bd
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -21,12 +17,7 @@
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
-<<<<<<< HEAD
-    "axios": "^1.6.8",
-    "expo": "^50.0.15",
-=======
     "expo": "^50.0.17",
->>>>>>> 91ebe4094e70c5b031806ce52d240dffcccb92bd
     "expo-font": "~11.10.3",
     "expo-location": "~16.5.5",
     "expo-splash-screen": "~0.26.4",

@@ -17,11 +17,15 @@
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
+<<<<<<< HEAD
     "@react-navigation/stack": "^6.3.29",
     "axios": "^1.6.8",
     "expo": "^50.0.17",
     "expo-build-properties": "^0.11.1",
     "expo-firebase-recaptcha": "^2.3.1",
+=======
+    "expo": "^50.0.17",
+>>>>>>> d07ae2be8095cf9693b04993e11306e3e0761c16
     "expo-font": "~11.10.3",
     "expo-location": "~16.5.5",
     "expo-splash-screen": "~0.26.5",

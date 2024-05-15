@@ -1,13 +1,15 @@
+import React, { useCallback, useReducer, useState } from 'react'
 import { View, Text, Image, TouchableOpacity } from 'react-native'
-import React, { useCallback, useReducer } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import PageContainer from '../components/PageContainer'
-import { COLORS, images, FONTS, SIZES } from '../constants'
 import { MaterialIcons, FontAwesome } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
+import PageContainer from '../components/PageContainer'
 import Input from '../components/Input'
 import Button from '../components/Button'
+import { COLORS, images, FONTS } from '../constants'
 import { reducer } from '../utils/reducers/formReducers'
 import { validateInput } from '../utils/actions/formActions'
+import { firebase } from '../config'
 
 const initialState = {
     inputValidities: {
@@ -16,23 +18,46 @@ const initialState = {
     },
     formIsValid: false,
 }
-const Login = ({ navigation }) => {
+
+const Login = () => {
+    const navigation = useNavigation()
     const [formState, dispatchFormState] = useReducer(reducer, initialState)
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [error, setError] = useState('')
 
     const inputChangedHandler = useCallback(
         (inputId, inputValue) => {
-            const result = validateInput(inputId, inputValue)
-            dispatchFormState({ inputId, validationResult: result })
+            const trimmedValue = inputValue.trim() // Trim input
+            const result = validateInput(inputId, trimmedValue)
+            dispatchFormState({
+                type: 'UPDATE',
+                inputId,
+                validationResult: result,
+            })
+            if (inputId === 'email') setEmail(trimmedValue)
+            if (inputId === 'password') setPassword(trimmedValue)
         },
         [dispatchFormState]
     )
 
+    const loginUser = async () => {
+        if (!formState.formIsValid) {
+            setError(
+                'Please check your email and password are entered correctly.'
+            )
+            return
+        }
+        try {
+            await firebase.auth().signInWithEmailAndPassword(email, password)
+            navigation.navigate('Home')
+        } catch (error) {
+            setError(error.message)
+        }
+    }
+
     return (
-        <SafeAreaView
-            style={{
-                flex: 1,
-            }}
-        >
+        <SafeAreaView style={{ flex: 1 }}>
             <PageContainer>
                 <View
                     style={{
@@ -49,15 +74,11 @@ const Login = ({ navigation }) => {
                             marginVertical: 48,
                         }}
                     />
-
                     <View
-                        style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                        }}
+                        style={{ flexDirection: 'row', alignItems: 'center' }}
                     >
                         <Text style={{ ...FONTS.h1, color: COLORS.primary }}>
-                            Dare
+                            Blood
                         </Text>
                         <Text
                             style={{
@@ -66,20 +87,21 @@ const Login = ({ navigation }) => {
                                 marginHorizontal: 8,
                             }}
                         >
-                            To
+                            🩸
                         </Text>
                         <Text style={{ ...FONTS.h1, color: COLORS.primary }}>
-                            Donate
+                            Mates
                         </Text>
                     </View>
-
                     <View style={{ marginVertical: 20 }}>
                         <Input
                             icon="email"
                             iconPack={MaterialIcons}
                             id="email"
                             onInputChanged={inputChangedHandler}
-                            errorText={formState.inputValidities['email']}
+                            errorText={
+                                !formState.inputValidities['email'] && error
+                            }
                             placeholder="Enter your email"
                             keyboardType="email-address"
                         />
@@ -88,7 +110,9 @@ const Login = ({ navigation }) => {
                             iconPack={FontAwesome}
                             id="password"
                             onInputChanged={inputChangedHandler}
-                            errorText={formState.inputValidities['password']}
+                            errorText={
+                                !formState.inputValidities['password'] && error
+                            }
                             autoCapitalize="none"
                             placeholder="Enter your password"
                             secureTextEntry
@@ -97,11 +121,12 @@ const Login = ({ navigation }) => {
                     <Button
                         title="LOGIN"
                         filled
-                        onPress={() => navigation.navigate('Register')}
-                        style={{
-                            width: '100%',
-                        }}
+                        onPress={loginUser}
+                        style={{ width: '100%' }}
                     />
+                    {error ? (
+                        <Text style={{ color: 'red' }}>{error}</Text>
+                    ) : null}
                     <TouchableOpacity
                         onPress={() => navigation.navigate('ResetPassword')}
                     >
@@ -112,25 +137,13 @@ const Login = ({ navigation }) => {
                                 marginVertical: 12,
                             }}
                         >
-                            Forgot Password
+                            Forgot Password?
                         </Text>
                     </TouchableOpacity>
-
-                    <View
-                        style={{
-                            marginVertical: 20,
-                            flexDirection: 'row',
-                        }}
-                    >
-                        <Text
-                            style={{
-                                ...FONTS.body3,
-                                color: COLORS.black,
-                            }}
-                        >
+                    <View style={{ marginVertical: 20, flexDirection: 'row' }}>
+                        <Text style={{ ...FONTS.body3, color: COLORS.black }}>
                             Don't have an account ?{' '}
                         </Text>
-
                         <TouchableOpacity
                             onPress={() => navigation.navigate('Register')}
                         >

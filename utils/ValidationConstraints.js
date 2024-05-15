@@ -2,52 +2,54 @@ import { validate } from 'validate.js'
 
 export const validateString = (id, value) => {
     const constraints = {
-        presence: {
-            allowEmpty: false,
+        [id]: {
+            presence: {
+                allowEmpty: false,
+                message: '^This field is required',
+            },
+            format: {
+                pattern: '[a-zA-Z]+',
+                flags: 'i',
+                message: '^Value can only contain letters',
+            },
         },
     }
 
-    if (value !== '') {
-        constraints.format = {
-            pattern: '[a-z]+',
-            flags: 'i',
-            message: 'Value can only contain letters',
-        }
-    }
-
-    const validationResult = validate({ [id]: value }, { [id]: constraints })
-    return validationResult && validationResult[id]
+    const validationResult = validate({ [id]: value }, constraints)
+    return !validationResult
 }
 
 export const validateEmail = (id, value) => {
     const constraints = {
-        presence: {
-            allowEmpty: false,
+        [id]: {
+            presence: {
+                allowEmpty: false,
+                message: '^This field is required',
+            },
+            email: {
+                message: '^Invalid email address',
+            },
         },
     }
 
-    if (value !== '') {
-        constraints.email = true
-    }
-
-    const validationResult = validate({ [id]: value }, { [id]: constraints })
-    return validationResult && validationResult[id]
+    const validationResult = validate({ [id]: value }, constraints)
+    return !validationResult
 }
 
 export const validatePassword = (id, value) => {
     const constraints = {
-        presence: {
-            allowEmpty: false,
+        [id]: {
+            presence: {
+                allowEmpty: false,
+                message: '^This field is required',
+            },
+            length: {
+                minimum: 6,
+                message: '^Password must be at least 6 characters',
+            },
         },
     }
 
-    if (value !== '') {
-        constraints.length = {
-            minimum: 6,
-            message: 'must be at least 6 characters',
-        }
-    }
-
-    const validationResult = validate({ [id]: value }, { [id]: constraints })
-    return validationResult && validationResult[id]
+    const validationResult = validate({ [id]: value }, constraints)
+    return !validationResult
 }

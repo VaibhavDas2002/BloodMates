@@ -1,10 +1,9 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
+import { View, Text, Image, TouchableOpacity } from 'react-native'
 import Onboarding from 'react-native-onboarding-swiper'
 
 const Dots = ({ selected }) => {
-    let backgroundColor
-    backgroundColor = selected ? '#ff2156' : '#808080'
+    const backgroundColor = selected ? '#ff2156' : '#808080'
     return (
         <View
             style={{
@@ -24,7 +23,7 @@ const Done = ({ ...props }) => (
         }}
         {...props}
     >
-        <Text style={{ color: '#ff2156' }}>Doneee oky </Text>
+        <Text style={{ color: '#ff2156' }}>Done</Text>
     </TouchableOpacity>
 )
 
@@ -46,7 +45,7 @@ const OnboardingStarter = ({ navigation }) => {
                     ),
                     title: 'Find Blood Donors',
                     subtitle:
-                        'Lorem ipsum dolor set maet Lorem ipsum dolor set maet Lorem ipsum dolor set maet ',
+                        'Lorem ipsum dolor set maet Lorem ipsum dolor set maet Lorem ipsum dolor set maet',
                 },
                 {
                     backgroundColor: '#fff',
@@ -57,7 +56,7 @@ const OnboardingStarter = ({ navigation }) => {
                     ),
                     title: 'Find Blood Donors',
                     subtitle:
-                        'Lorem ipsum dolor set maet Lorem ipsum dolor set maet Lorem ipsum dolor set maet ',
+                        'Lorem ipsum dolor set maet Lorem ipsum dolor set maet Lorem ipsum dolor set maet',
                 },
             ]}
         />

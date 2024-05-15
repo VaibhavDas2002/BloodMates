@@ -1,3 +1,5 @@
+// ../utils/actions/formActions.js
+
 import {
     validateEmail,
     validatePassword,
@@ -17,4 +19,5 @@ export const validateInput = (inputId, inputValue) => {
     } else if (inputId === 'password') {
         return validatePassword(inputId, inputValue)
     }
+    return false
 }

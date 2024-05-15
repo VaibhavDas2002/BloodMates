@@ -1,5 +1,10 @@
+import React, { useEffect, useState, useCallback } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { useFonts } from 'expo-font'
+import * as SplashScreen from 'expo-splash-screen'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import BottomTabNavigation from './navigation/BottomTabNavigation'
 import {
     GetStarted,
     Home,
@@ -9,31 +14,13 @@ import {
     Register,
     ResetPassword,
     SuccessVerification,
-    ChatComponent,
 } from './screens'
-import { useFonts } from 'expo-font'
-import * as SplashScreen from 'expo-splash-screen'
-import { useCallback, useEffect, useState } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import BottomTabNavigation from './navigation/BottomTabNavigation'
+import { firebase } from './config' // Import your Firebase configuration
 
-SplashScreen.preventAutoHideAsync()
 const Stack = createNativeStackNavigator()
 
 export default function App() {
     const [isFirstLaunch, setIsFirstLaunch] = useState(null)
-
-    useEffect(() => {
-        AsyncStorage.getItem('alreadyLaunched').then((value) => {
-            if (value == null) {
-                AsyncStorage.setItem('alreadyLaunched', 'true')
-                setIsFirstLaunch(true)
-            } else {
-                setIsFirstLaunch(false)
-            }
-        })
-    }, [])
-
     const [fontsLoaded] = useFonts({
         black: require('./assets/fonts/Poppins-Black.ttf'),
         bold: require('./assets/fonts/Poppins-Bold.ttf'),
@@ -41,22 +28,50 @@ export default function App() {
         regular: require('./assets/fonts/Poppins-Regular.ttf'),
         semiBold: require('./assets/fonts/Poppins-SemiBold.ttf'),
     })
+    const [user, setUser] = useState(null)
 
-    const onLayoutRootView = useCallback(async () => {
-        if (fontsLoaded) {
+    const loadFontsAndCheckLaunch = useCallback(async () => {
+        await SplashScreen.preventAutoHideAsync()
+        try {
+            const value = await AsyncStorage.getItem('alreadyLaunched')
+            if (value === null) {
+                await AsyncStorage.setItem('alreadyLaunched', 'true')
+                setIsFirstLaunch(true)
+            } else {
+                setIsFirstLaunch(false)
+            }
+        } catch (error) {
+            console.error('Error loading data:', error)
+        } finally {
             await SplashScreen.hideAsync()
         }
-    }, [fontsLoaded])
+    }, [])
 
-    if (!fontsLoaded) {
+    const handleAuthStateChange = useCallback((user) => {
+        setUser(user)
+    }, [])
+
+    useEffect(() => {
+        loadFontsAndCheckLaunch()
+        const unsubscribe = firebase
+            .auth()
+            .onAuthStateChanged(handleAuthStateChange)
+        return unsubscribe
+    }, [loadFontsAndCheckLaunch, handleAuthStateChange])
+
+    if (!fontsLoaded || isFirstLaunch === null) {
         return null
     }
 
     return (
-        <NavigationContainer onReady={onLayoutRootView}>
+        <NavigationContainer>
             <Stack.Navigator
                 initialRouteName={
-                    isFirstLaunch ? 'OnboardingStarter' : 'GetStarted'
+                    user
+                        ? 'Home'
+                        : isFirstLaunch
+                        ? 'OnboardingStarter'
+                        : 'GetStarted'
                 }
             >
                 <Stack.Screen

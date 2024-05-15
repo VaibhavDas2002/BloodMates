@@ -1,5 +1,5 @@
-import { View, Text, Image } from 'react-native'
 import React from 'react'
+import { View, Text, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import PageContainer from '../components/PageContainer'
 import { images, COLORS, FONTS, SIZES } from '../constants'
@@ -54,8 +54,8 @@ const GetStarted = ({ navigation }) => {
                                 textAlign: 'center',
                             }}
                         >
-                            You can donate for ones in need and request blood if
-                            you need
+                            You can donate for those in need and request blood
+                            if you need
                         </Text>
                     </View>
                     <Button

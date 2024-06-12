@@ -1,5 +1,3 @@
-// ../utils/actions/formActions.js
-
 import {
     validateEmail,
     validatePassword,
@@ -11,7 +9,15 @@ export const validateInput = (inputId, inputValue) => {
         inputId === 'fullName' ||
         inputId === 'bloodType' ||
         inputId === 'location' ||
-        inputId === 'phoneNumber'
+        inputId === 'phoneNumber' ||
+        inputId === 'hospital' ||
+        inputId === 'DOB' ||
+        inputId === 'organizerName' ||
+        inputId === 'organizationName' ||
+        inputId === 'address' ||
+        inputId === 'donationDate' ||
+        inputId === 'phoneNumber' ||
+        inputId === 'note'
     ) {
         return validateString(inputId, inputValue)
     } else if (inputId === 'email') {
@@ -20,4 +26,5 @@ export const validateInput = (inputId, inputValue) => {
         return validatePassword(inputId, inputValue)
     }
     return false
+    // return true
 }

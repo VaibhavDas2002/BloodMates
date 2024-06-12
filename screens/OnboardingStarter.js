@@ -1,9 +1,10 @@
-import React from 'react'
 import { View, Text, Image, TouchableOpacity } from 'react-native'
+import React from 'react'
 import Onboarding from 'react-native-onboarding-swiper'
 
 const Dots = ({ selected }) => {
-    const backgroundColor = selected ? '#ff2156' : '#808080'
+    let backgroundColor
+    backgroundColor = selected ? '#ff2156' : '#808080'
     return (
         <View
             style={{
@@ -43,9 +44,9 @@ const OnboardingStarter = ({ navigation }) => {
                             source={require('../assets/images/onboarding_1.png')}
                         />
                     ),
-                    title: 'Find Blood Donors',
+                    title: 'Become a blood donor.',
                     subtitle:
-                        'Lorem ipsum dolor set maet Lorem ipsum dolor set maet Lorem ipsum dolor set maet',
+                        'Help us make a difference. Join the blood donation family',
                 },
                 {
                     backgroundColor: '#fff',
@@ -54,9 +55,9 @@ const OnboardingStarter = ({ navigation }) => {
                             source={require('../assets/images/onboarding_2.png')}
                         />
                     ),
-                    title: 'Find Blood Donors',
+                    title: 'Post A Blood Request',
                     subtitle:
-                        'Lorem ipsum dolor set maet Lorem ipsum dolor set maet Lorem ipsum dolor set maet',
+                        'Get help fast! Sign up to post your blood request now.',
                 },
             ]}
         />

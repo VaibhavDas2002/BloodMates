@@ -8,9 +8,10 @@ export const validateString = (id, value) => {
                 message: '^This field is required',
             },
             format: {
-                pattern: '[a-zA-Z]+',
+                pattern: '[a-zA-Z0-9, ]+',
                 flags: 'i',
-                message: '^Value can only contain letters',
+                message:
+                    '^Value can only contain letters, numbers, commas, and spaces',
             },
         },
     }

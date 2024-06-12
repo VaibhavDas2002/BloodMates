@@ -1,5 +1,13 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
+import {
+    View,
+    Text,
+    Image,
+    TouchableOpacity,
+    Alert,
+    Share,
+    Linking,
+} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import PageContainer from '../components/PageContainer'
 import {
@@ -13,10 +21,14 @@ import {
 } from '@expo/vector-icons'
 import { COLORS, FONTS, SIZES, images } from '../constants'
 import * as Location from 'expo-location'
+import { firebase } from '../config'
 
 const Profile = ({ navigation }) => {
     const [address, setAddress] = useState('Loading...')
     const [errorMsg, setErrorMsg] = useState(null)
+    const [userName, setUserName] = useState('Vaibhav Das')
+    const [bloodType, setBloodType] = useState('AB+')
+    const [phoneNumber, setPhoneNumber] = useState('')
 
     useEffect(() => {
         const getPermissions = async () => {
@@ -27,22 +39,82 @@ const Profile = ({ navigation }) => {
             }
 
             let location = await Location.getCurrentPositionAsync()
-            const text = JSON.stringify(location)
-            const parsedData = JSON.parse(text)
-            const longitude = parsedData.coords.longitude
-            const latitude = parsedData.coords.latitude
-            let address = await Location.reverseGeocodeAsync({
+            const { latitude, longitude } = location.coords
+            let resolvedAddress = await Location.reverseGeocodeAsync({
                 latitude,
                 longitude,
             })
+            if (resolvedAddress.length > 0) {
+                setAddress(
+                    `${resolvedAddress[0].name}, ${resolvedAddress[0].district}, ${resolvedAddress[0].city}`
+                )
+            }
+        }
 
-            setAddress(
-                `${address[0].name},${address[0].district},${address[0].city}`
-            )
+        const fetchUserData = async () => {
+            const user = firebase.auth().currentUser
+            if (user) {
+                const userDoc = await firebase
+                    .firestore()
+                    .collection('users')
+                    .doc(user.uid)
+                    .get()
+                if (userDoc.exists) {
+                    const data = userDoc.data()
+                    setUserName(data.fullName || 'No Name Provided')
+                    setBloodType(data.bloodType || 'No Blood Type Provided')
+                    setPhoneNumber(
+                        data.phoneNumber || 'No Phone Number Provided'
+                    )
+                }
+            }
         }
 
         getPermissions()
+        fetchUserData()
     }, [])
+
+    const handleLogout = () => {
+        firebase
+            .auth()
+            .signOut()
+            .then(() => {
+                navigation.replace('Login')
+            })
+            .catch((error) => {
+                console.error(error)
+                Alert.alert('Logout Failed', error.message)
+            })
+    }
+
+    const handleInviteFriend = () => {
+        Share.share({
+            message:
+                'Hi, I got to know about an app called BLOODMATES. A mate always available during your needy times. Go and Download from IOS: App Store and Android: Play Store',
+        }).catch((error) => {
+            console.error(error)
+            Alert.alert('Error', 'Failed to share')
+        })
+    }
+
+    const handleCallNow = () => {
+        if (phoneNumber) {
+            const url = `tel:${phoneNumber}`
+            Linking.openURL(url).catch((err) =>
+                console.error('Error calling number: ', err)
+            )
+        } else {
+            Alert.alert('Phone number is not available.')
+        }
+    }
+
+    const handleUrlOpen = () => {
+        const url = 'https://forms.gle/hwC1YYwtCgrsMrut6'
+        Linking.openURL(url).catch((err) =>
+            console.error('Error Opening Feedback form ', err)
+        )
+    }
+
     function renderHeader() {
         return (
             <View
@@ -70,7 +142,7 @@ const Profile = ({ navigation }) => {
                     />
                 </TouchableOpacity>
                 <Text style={{ ...FONTS.h4 }}>Profile</Text>
-                <TouchableOpacity onPress={() => console.log('Pressed')}>
+                <TouchableOpacity onPress={() => console.log('Edit Pressed')}>
                     <Feather name="edit" size={24} color={COLORS.black} />
                 </TouchableOpacity>
             </View>
@@ -79,14 +151,9 @@ const Profile = ({ navigation }) => {
 
     function renderProfile() {
         return (
-            <View
-                style={{
-                    alignItems: 'center',
-                    marginVertical: 22,
-                }}
-            >
+            <View style={{ alignItems: 'center', marginVertical: 22 }}>
                 <Image
-                    source={images.user3}
+                    source={images.user}
                     resizeMode="contain"
                     style={{
                         height: 100,
@@ -94,7 +161,7 @@ const Profile = ({ navigation }) => {
                         borderRadius: SIZES.padding,
                     }}
                 />
-                <Text style={{ ...FONTS.h2, marginTop: 24 }}>Fahim Ekan</Text>
+                <Text style={{ ...FONTS.h2, marginTop: 24 }}>{userName}</Text>
                 <View
                     style={{
                         flexDirection: 'row',
@@ -106,12 +173,7 @@ const Profile = ({ navigation }) => {
                         size={24}
                         color={COLORS.primary}
                     />
-                    <Text
-                        style={{
-                            ...FONTS.body4,
-                            marginLeft: 8,
-                        }}
-                    >
+                    <Text style={{ ...FONTS.body4, marginLeft: 8 }}>
                         {address}
                     </Text>
                 </View>
@@ -128,7 +190,7 @@ const Profile = ({ navigation }) => {
                 }}
             >
                 <TouchableOpacity
-                    onPress={() => console.log('Pressed')}
+                    onPress={handleCallNow}
                     style={{
                         backgroundColor: COLORS.secondary,
                         width: 150,
@@ -197,7 +259,7 @@ const Profile = ({ navigation }) => {
                         alignItems: 'center',
                     }}
                 >
-                    <Text style={{ ...FONTS.h1 }}>A+</Text>
+                    <Text style={{ ...FONTS.h1 }}>{bloodType}</Text>
                     <Text style={{ ...FONTS.body3 }}>Blood Type</Text>
                 </View>
                 <View
@@ -257,7 +319,7 @@ const Profile = ({ navigation }) => {
                         alignItems: 'center',
                         marginVertical: 12,
                     }}
-                    onPress={() => console.log('Pressed')}
+                    onPress={handleInviteFriend}
                 >
                     <Ionicons
                         name="share-outline"
@@ -280,7 +342,7 @@ const Profile = ({ navigation }) => {
                         alignItems: 'center',
                         marginVertical: 12,
                     }}
-                    onPress={() => console.log('Pressed')}
+                    onPress={handleUrlOpen}
                 >
                     <Feather name="info" size={24} color={COLORS.primary} />
                     <Text
@@ -299,7 +361,7 @@ const Profile = ({ navigation }) => {
                         alignItems: 'center',
                         marginVertical: 12,
                     }}
-                    onPress={() => console.log('Pressed')}
+                    onPress={handleLogout}
                 >
                     <AntDesign name="logout" size={24} color={COLORS.primary} />
                     <Text
@@ -314,6 +376,7 @@ const Profile = ({ navigation }) => {
             </View>
         )
     }
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <PageContainer>

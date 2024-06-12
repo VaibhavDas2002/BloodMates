@@ -2,7 +2,7 @@ import { View, Text, Image } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import PageContainer from '../components/PageContainer'
-import { images } from '../constants'
+import { images, COLORS, FONTS, SIZES } from '../constants'
 import Button from '../components/Button'
 
 // Let's validate the forms
@@ -25,12 +25,19 @@ const SuccessVerification = ({ navigation }) => {
                             marginBottom: 40,
                         }}
                     />
+                    <Text
+                        style={{
+                            ...FONTS.body3,
+                            textAlign: 'center',
+                        }}
+                    >
+                        Reset Password link is send to your email
+                    </Text>
+
                     <Button
                         title="FINISH"
                         filled
-                        onPress={() =>
-                            navigation.navigate('BottomTabNavigation')
-                        }
+                        onPress={() => navigation.navigate('Login')}
                         style={{
                             width: '100%',
                         }}

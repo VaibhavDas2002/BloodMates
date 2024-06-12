@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image } from 'react-native'
+import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'
@@ -6,6 +6,8 @@ import { COLORS, SIZES, FONTS } from '../constants'
 import Slideshow from 'react-native-image-slider-show'
 import { categories } from '../constants/data'
 import DonationCard from '../components/DonationCard'
+import { useNavigation } from '@react-navigation/native'
+import { fetchDonationRequests } from '../utils/service'
 
 const Home = () => {
     const [position, setPosition] = useState(0)
@@ -18,141 +20,96 @@ const Home = () => {
         },
     ])
 
+    const navigation = useNavigation()
+
     useEffect(() => {
         const toggle = setInterval(() => {
             setPosition(position === dataSource.length - 1 ? 0 : position + 1)
-        }, 1000)
+        }, 3000)
 
         return () => clearInterval(toggle)
-    })
+    }, [position, dataSource.length])
 
-    function renderHeader() {
-        return (
-            <View
-                style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginVertical: 12,
-                }}
-            >
+    const renderHeader = () => (
+        <View style={styles.header}>
+            <TouchableOpacity onPress={() => console.log('Pressed')}>
+                <MaterialCommunityIcons
+                    name="view-dashboard"
+                    size={28}
+                    color={COLORS.primary}
+                />
+            </TouchableOpacity>
+            <View>
+                <View style={styles.notificationDot}></View>
                 <TouchableOpacity onPress={() => console.log('Pressed')}>
-                    <MaterialCommunityIcons
-                        name="view-dashboard"
+                    <Ionicons
+                        name="notifications-outline"
                         size={28}
-                        color={COLORS.primary}
+                        color={COLORS.black}
                     />
                 </TouchableOpacity>
-                <View>
-                    <View
-                        style={{
-                            height: 6,
-                            width: 6,
-                            backgroundColor: COLORS.primary,
-                            borderRadius: 3,
-                            position: 'absolute',
-                            right: 5,
-                            top: 5,
-                        }}
-                    ></View>
-                    <TouchableOpacity onPress={() => console.log('Pressed')}>
-                        <Ionicons
-                            name="notifications-outline"
-                            size={28}
-                            color={COLORS.black}
-                        />
-                    </TouchableOpacity>
-                </View>
             </View>
-        )
-    }
+        </View>
+    )
 
-    function renderSliderBanner() {
-        return (
-            <View
-                style={{
-                    height: 200,
-                    width: '100%',
-                }}
-            >
-                <Slideshow position={position} dataSource={dataSource} />
-            </View>
-        )
-    }
+    const renderSliderBanner = () => (
+        <View style={styles.sliderBanner}>
+            <Slideshow position={position} dataSource={dataSource} />
+        </View>
+    )
 
-    function renderFeatures() {
-        return (
-            <View
-                style={{
-                    marginVertical: SIZES.padding,
-                    width: '100%',
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    flexWrap: 'wrap',
-                }}
-            >
-                {categories.map((category, index) => (
-                    <TouchableOpacity
-                        key={index}
-                        style={{
-                            height: 120,
-                            width: 110,
-                            borderColor: COLORS.secondaryWhite,
-                            borderWidth: 2,
-                            backgroundColor: COLORS.white,
-                            borderRadius: 10,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginBottom: 22,
-                        }}
-                    >
-                        <Image
-                            source={category.icon}
-                            resizeMode="contain"
-                            style={{
-                                height: 40,
-                                width: 40,
-                                marginVertical: 12,
-                            }}
-                        />
-                        <Text
-                            style={{
-                                ...FONTS.body3,
-                                color: COLORS.secondaryBlack,
-                            }}
-                        >
-                            {category.title}
-                        </Text>
-                    </TouchableOpacity>
-                ))}
-            </View>
-        )
-    }
-
-    function renderDonationCard() {
-        return (
-            <View>
-                <Text
-                    style={{
-                        ...FONTS.body3,
-                        fontWeight: 'bold',
-                        color: COLORS.secondaryBlack,
-                    }}
+    const renderFeatures = () => (
+        <View style={styles.featuresContainer}>
+            {categories.map((category, index) => (
+                <TouchableOpacity
+                    key={index}
+                    style={styles.featureCard}
+                    onPress={() => navigation.navigate(category.screen)}
                 >
-                    Donation request
-                </Text>
-                <DonationCard
-                    name="Amir Hamza"
-                    location="Hertford Dritish Hospital"
-                    bloodType="B+"
-                    postedDate="5 min"
-                    onPress={() => console.log('Pressed')}
-                />
-            </View>
+                    <Image
+                        source={category.icon}
+                        resizeMode="contain"
+                        style={styles.featureImage}
+                    />
+                    <Text style={styles.featureText}>{category.title}</Text>
+                </TouchableOpacity>
+            ))}
+        </View>
+    )
+
+    const renderDonationCard = () => {
+        const [latestCard, setLatestCard] = useState({})
+
+        const getLatestCard = async () => {
+            const results = await fetchDonationRequests()
+            const sortedResults = results.sort(
+                (a, b) => b.timestamp - a.timestamp
+            )
+            setLatestCard(sortedResults[0])
+        }
+
+        useEffect(() => {
+            getLatestCard()
+        }, [window])
+
+        return (
+            latestCard.bloodType && (
+                <View>
+                    <Text style={styles.donationTitle}>Donation request</Text>
+                    <DonationCard
+                        name={latestCard.name}
+                        location={latestCard.location}
+                        bloodType={latestCard.bloodType}
+                        postedDate={latestCard.postedDate}
+                    />
+                </View>
+            )
         )
     }
+
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-            <View style={{ marginHorizontal: 22 }}>
+        <SafeAreaView style={styles.container}>
+            <View style={styles.content}>
                 {renderHeader()}
                 {renderSliderBanner()}
                 {renderFeatures()}
@@ -161,5 +118,65 @@ const Home = () => {
         </SafeAreaView>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: COLORS.white,
+    },
+    content: {
+        marginHorizontal: 22,
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 12,
+    },
+    notificationDot: {
+        height: 6,
+        width: 6,
+        backgroundColor: COLORS.primary,
+        borderRadius: 3,
+        position: 'absolute',
+        right: 5,
+        top: 5,
+    },
+    sliderBanner: {
+        height: 200,
+        width: '100%',
+    },
+    featuresContainer: {
+        marginVertical: SIZES.padding,
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+    },
+    featureCard: {
+        height: 120,
+        width: 110,
+        borderColor: COLORS.secondaryWhite,
+        borderWidth: 2,
+        backgroundColor: COLORS.white,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 22,
+    },
+    featureImage: {
+        height: 40,
+        width: 40,
+        marginVertical: 12,
+    },
+    featureText: {
+        ...FONTS.body3,
+        color: COLORS.secondaryBlack,
+    },
+    donationTitle: {
+        ...FONTS.body3,
+        fontWeight: 'bold',
+        color: COLORS.secondaryBlack,
+    },
+})
 
 export default Home

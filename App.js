@@ -6,6 +6,9 @@ import * as SplashScreen from 'expo-splash-screen'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import BottomTabNavigation from './navigation/BottomTabNavigation'
 import {
+    Assistant,
+    Campaign,
+    Donates,
     GetStarted,
     Home,
     Login,
@@ -14,6 +17,7 @@ import {
     Register,
     ResetPassword,
     SuccessVerification,
+    CampaignRegister,
 } from './screens'
 import { firebase } from './config' // Import your Firebase configuration
 
@@ -68,7 +72,7 @@ export default function App() {
             <Stack.Navigator
                 initialRouteName={
                     user
-                        ? 'Home'
+                        ? 'BottomTabNavigation'
                         : isFirstLaunch
                         ? 'OnboardingStarter'
                         : 'GetStarted'
@@ -133,6 +137,34 @@ export default function App() {
                 <Stack.Screen
                     name="GetStarted"
                     component={GetStarted}
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name="Assistant"
+                    component={Assistant}
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name="Campaign"
+                    component={Campaign}
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name="Donate Blood"
+                    component={Donates}
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name="CampaignRegister"
+                    component={CampaignRegister}
                     options={{
                         headerShown: false,
                     }}

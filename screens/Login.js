@@ -12,6 +12,10 @@ import { validateInput } from '../utils/actions/formActions'
 import { firebase } from '../config'
 
 const initialState = {
+    inputValues: {
+        email: '',
+        password: '',
+    },
     inputValidities: {
         email: false,
         password: false,
@@ -22,21 +26,19 @@ const initialState = {
 const Login = () => {
     const navigation = useNavigation()
     const [formState, dispatchFormState] = useReducer(reducer, initialState)
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
     const [error, setError] = useState('')
 
     const inputChangedHandler = useCallback(
         (inputId, inputValue) => {
             const trimmedValue = inputValue.trim() // Trim input
             const result = validateInput(inputId, trimmedValue)
+
             dispatchFormState({
                 type: 'UPDATE',
                 inputId,
                 validationResult: result,
+                inputValue: trimmedValue,
             })
-            if (inputId === 'email') setEmail(trimmedValue)
-            if (inputId === 'password') setPassword(trimmedValue)
         },
         [dispatchFormState]
     )
@@ -49,8 +51,13 @@ const Login = () => {
             return
         }
         try {
-            await firebase.auth().signInWithEmailAndPassword(email, password)
-            navigation.navigate('Home')
+            await firebase
+                .auth()
+                .signInWithEmailAndPassword(
+                    formState.inputValues.email,
+                    formState.inputValues.password
+                )
+            navigation.navigate('BottomTabNavigation')
         } catch (error) {
             setError(error.message)
         }

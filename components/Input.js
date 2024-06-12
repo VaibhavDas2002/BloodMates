@@ -1,10 +1,21 @@
 import { View, Text, StyleSheet, TextInput } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { COLORS, SIZES } from '../constants'
+import CustomDatePicker from './Datepicker'
 
 const Input = (props) => {
+    const { isDateType } = props
+    const [isOpenDatePicker, setIsOpenDatePicker] = useState(false)
+    const [date, setDate] = useState(new Date())
+
     const onChangeText = (text) => {
         props.onInputChanged(props.id, text)
+    }
+
+    const onClick = () => {
+        if (isDateType) {
+            setIsOpenDatePicker(true)
+        }
     }
 
     return (
@@ -23,11 +34,22 @@ const Input = (props) => {
                     style={styles.input}
                     placeholder={props.placeholder}
                     placeholderTextColor={COLORS.black}
+                    // editable={!isDateType}
+                    onFocus={onClick}
                 />
+                {isDateType && (
+                    <CustomDatePicker
+                        isOpenDatePicker={isOpenDatePicker}
+                        setIsOpenDatePicker={setIsOpenDatePicker}
+                        date={date}
+                        setDate={setDate}
+                        onChangeDate={onChangeText}
+                    />
+                )}
             </View>
             {props.errorText && (
                 <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{props.errorText[0]}</Text>
+                    <Text style={styles.errorText}>{props.errorText}</Text>
                 </View>
             )}
         </View>

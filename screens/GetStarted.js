@@ -1,5 +1,5 @@
-import React from 'react'
 import { View, Text, Image } from 'react-native'
+import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import PageContainer from '../components/PageContainer'
 import { images, COLORS, FONTS, SIZES } from '../constants'
@@ -31,7 +31,7 @@ const GetStarted = ({ navigation }) => {
                         }}
                     >
                         <Text style={{ ...FONTS.h1, color: COLORS.primary }}>
-                            Dare
+                            Blood
                         </Text>
                         <Text
                             style={{
@@ -40,10 +40,10 @@ const GetStarted = ({ navigation }) => {
                                 marginHorizontal: 8,
                             }}
                         >
-                            To
+                            🩸
                         </Text>
                         <Text style={{ ...FONTS.h1, color: COLORS.primary }}>
-                            Donate
+                            Mates
                         </Text>
                     </View>
 
@@ -54,8 +54,8 @@ const GetStarted = ({ navigation }) => {
                                 textAlign: 'center',
                             }}
                         >
-                            You can donate for those in need and request blood
-                            if you need
+                            You can donate for ones in need and request blood if
+                            you need
                         </Text>
                     </View>
                     <Button

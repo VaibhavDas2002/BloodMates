@@ -1,16 +1,19 @@
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    ScrollView,
+    StyleSheet,
+} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import PageContainer from '../components/PageContainer'
 import { COLORS, SIZES, FONTS } from '../constants'
-import { MaterialIcons } from '@expo/vector-icons'
-import { donationRequests } from '../constants/data'
-import DonationCard from '../components/DonationCard'
-import timesago from 'timesago'
-import { firebase } from '../config'
-import { fetchDonationRequests } from '../utils/service'
+import { MaterialIcons, Ionicons } from '@expo/vector-icons'
+import { fetchCampaignList } from '../utils/service'
+import CampaignCard from '../components/CampaignCard'
 
-const DonationRequest = ({ navigation }) => {
+const Campaign = ({ navigation }) => {
     function renderHeader() {
         return (
             <View
@@ -21,7 +24,7 @@ const DonationRequest = ({ navigation }) => {
                 }}
             >
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('Home')}
+                    onPress={() => navigation.navigate('BottomTabNavigation')}
                     style={{
                         height: 44,
                         width: 44,
@@ -37,21 +40,33 @@ const DonationRequest = ({ navigation }) => {
                         color={COLORS.black}
                     />
                 </TouchableOpacity>
-                <Text style={{ ...FONTS.h4 }}>Donation Request</Text>
+                <Text style={{ ...FONTS.h4 }}>Campaign</Text>
+                <View>
+                    <View style={styles.notificationDot}></View>
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('CampaignRegister')}
+                    >
+                        <Ionicons
+                            name="add-sharp"
+                            size={28}
+                            color={COLORS.black}
+                        />
+                    </TouchableOpacity>
+                </View>
             </View>
         )
     }
 
     function renderContent() {
-        const [donationRequests, setDonationRequests] = useState([])
+        const [campaign, setcampaign] = useState([])
 
         useEffect(async () => {
-            const results = await fetchDonationRequests()
-            const sorted = results.sort((a, b) => b.timestamp - a.timestamp)
-            setDonationRequests(sorted)
-        }, [window])
+            const results = await fetchCampaignList()
+            const sorted = results.sort((a, b) => b.Date - a.Date)
+            setcampaign(sorted)
+        }, [])
 
-        if (donationRequests.length === 0) {
+        if (campaign.length === 0) {
             return (
                 <View
                     style={{
@@ -60,21 +75,22 @@ const DonationRequest = ({ navigation }) => {
                         alignItems: 'center',
                     }}
                 >
-                    <Text style={{ ...FONTS.h3 }}>No Donation Requests</Text>
+                    <Text style={{ ...FONTS.h3 }}>Campaign</Text>
                 </View>
             )
         }
 
         return (
             <ScrollView>
-                {donationRequests.map((donationRequest, index) => (
-                    <DonationCard
+                {campaign.map((Campaign, index) => (
+                    <CampaignCard
                         key={index}
-                        name={donationRequest.name}
-                        location={donationRequest.location}
-                        postedDate={donationRequest.postedDate}
-                        bloodType={donationRequest.bloodType}
-                        mobile={donationRequest.mobile}
+                        name={Campaign.orgName}
+                        orgrname={Campaign.orgrName}
+                        location={Campaign.location}
+                        Date={Campaign.Date}
+                        mobile={Campaign.mobile}
+                        note={Campaign.note}
                     />
                 ))}
             </ScrollView>
@@ -96,4 +112,16 @@ const DonationRequest = ({ navigation }) => {
     )
 }
 
-export default DonationRequest
+const styles = StyleSheet.create({
+    notificationDot: {
+        height: 6,
+        width: 6,
+        backgroundColor: COLORS.primary,
+        borderRadius: 3,
+        position: 'absolute',
+        right: 5,
+        top: 5,
+    },
+})
+
+export default Campaign

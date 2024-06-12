@@ -5,12 +5,12 @@ import { Image } from 'react-native'
 import * as Linking from 'expo-linking'
 import { TouchableOpacity } from 'react-native'
 
-const DonationCard = (props) => {
+const CampaignCard = (props) => {
     return (
         <View
             style={{
                 width: SIZES.width - 44,
-                height: 148,
+                height: 225,
                 borderRadius: SIZES.padding,
                 backgroundColor: COLORS.white,
                 flexDirection: 'row',
@@ -37,7 +37,7 @@ const DonationCard = (props) => {
                         marginVertical: 2,
                     }}
                 >
-                    Name
+                    Organizer Name
                 </Text>
                 <Text
                     style={{
@@ -47,6 +47,24 @@ const DonationCard = (props) => {
                     }}
                 >
                     {props.name}
+                </Text>
+                <Text
+                    style={{
+                        fontSize: 14,
+                        color: COLORS.secondaryBlack,
+                        marginVertical: 2,
+                    }}
+                >
+                    Organization
+                </Text>
+                <Text
+                    style={{
+                        fontSize: 14,
+                        color: COLORS.black,
+                        fontWeight: 500,
+                    }}
+                >
+                    {props.orgrname}
                 </Text>
                 <Text
                     style={{
@@ -68,10 +86,24 @@ const DonationCard = (props) => {
                     {props.location}
                 </Text>
                 <Text style={{ ...FONTS.body4, color: COLORS.black }}>
-                    {props.postedDate}
+                    {new Date(props.Date).toLocaleDateString()}
+                    {/* {props.Date} */}
+                </Text>
+                <Text
+                    style={{
+                        fontSize: 14,
+                        color: COLORS.black,
+                        fontWeight: 500,
+                        marginVertical: 2,
+                    }}
+                >
+                    Contact
                 </Text>
                 <Text style={{ ...FONTS.body4, color: COLORS.black }}>
                     {props.mobile}
+                </Text>
+                <Text style={{ ...FONTS.body4, color: COLORS.black }}>
+                    {props.note}
                 </Text>
             </View>
 
@@ -81,19 +113,7 @@ const DonationCard = (props) => {
                     alignItems: 'center',
                 }}
             >
-                <Image source={icons.bloodVectorIcon} resizeMode="contain" />
-                <Text
-                    style={{
-                        ...FONTS.body3,
-                        color: COLORS.white,
-                        position: 'absolute',
-                        top: 22,
-                        left: 22,
-                    }}
-                >
-                    {props.bloodType}
-                </Text>
-
+                <Image source={icons.categoryIcon6} resizeMode="contain" />
                 <TouchableOpacity
                     onPress={() => {
                         Linking.openURL(`tel://${props.mobile}`)
@@ -105,7 +125,7 @@ const DonationCard = (props) => {
                             color: COLORS.primary,
                         }}
                     >
-                        Donate
+                        Contact
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -113,4 +133,4 @@ const DonationCard = (props) => {
     )
 }
 
-export default DonationCard
+export default CampaignCard

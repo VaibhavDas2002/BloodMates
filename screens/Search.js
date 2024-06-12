@@ -7,8 +7,9 @@ import {
     Modal,
     Image,
     FlatList,
+    Alert,
 } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import PageContainer from '../components/PageContainer'
 import { COLORS, SIZES, FONTS, images, icons } from '../constants'
@@ -18,22 +19,69 @@ import {
     EvilIcons,
     MaterialCommunityIcons,
     Entypo,
+    AntDesign,
 } from '@expo/vector-icons'
-import { donors } from '../constants/data'
-import MapView from 'react-native-maps'
+// import { donors } from '../constants/data'
+import MapView, { Marker } from 'react-native-maps'
+import { firebase } from '../config'
+import { getReverseGeocode } from '../utils/location'
+import * as Linking from 'expo-linking'
 
 const Search = ({ navigation }) => {
     const [search, setSearch] = useState('')
-    const [filteredDonors, setFilteredDonors] = useState(donors)
+    const [users, setUsers] = useState([])
+    const [filteredDonors, setFilteredDonors] = useState(users)
     const [modalVisible, setModalVisible] = useState(false)
+    const [currentUserId, setCurrentUserId] = useState('')
 
     const handleSearch = (data) => {
         setSearch(data)
-        const filteredData = donors.filter((donor) =>
-            donor.location.toLowerCase().includes(data.toLowerCase())
+        const filteredData = users.filter(
+            (donor) =>
+                donor.location.toLowerCase().includes(data.toLowerCase()) ||
+                donor.name.toLowerCase().includes(data.toLowerCase()) ||
+                donor.bloodType.toLowerCase().includes(data.toLowerCase())
         )
         setFilteredDonors(filteredData)
     }
+
+    const fetchAllDonors = async () => {
+        const snapshot = await firebase.firestore().collection('users').get()
+        const results = snapshot.docs.map((doc) => doc.data())
+
+        const _users = results.filter((_item) => _item.id !== undefined)
+
+        let userData = []
+
+        for (let _user of _users) {
+            const { county, city, state_district, state, postcode } =
+                await getReverseGeocode(_user.location[0], _user.location[1])
+
+            userData.push({
+                id: _user.id,
+                image: images.user,
+                name: _user.fullName,
+                location: `${county}\n${city}, ${state_district}\n${state}\nPIN-${postcode}`,
+                coordinates: _user.location,
+                bloodType: _user.bloodType,
+                mobile: _user.phoneNumber,
+            })
+        }
+
+        console.log({ userData })
+        setUsers(userData)
+        setFilteredDonors(userData)
+    }
+
+    useEffect(() => {
+        fetchAllDonors()
+    }, [])
+
+    const handleItemClick = (id) => {
+        setCurrentUserId(id)
+        setModalVisible(true)
+    }
+
     function renderHeader() {
         return (
             <View
@@ -60,7 +108,7 @@ const Search = ({ navigation }) => {
                         color={COLORS.black}
                     />
                 </TouchableOpacity>
-                <Text style={{ ...FONTS.h4 }}>Rearch</Text>
+                <Text style={{ ...FONTS.h4 }}>Search</Text>
             </View>
         )
     }
@@ -78,11 +126,7 @@ const Search = ({ navigation }) => {
                     borderRadius: 4,
                 }}
             >
-                <Ionicons
-                    name="ios-search-outline"
-                    size={24}
-                    color={COLORS.black}
-                />
+                <AntDesign name="search1" size={24} color="black" />
                 <TextInput
                     style={{
                         width: SIZES.width - 144,
@@ -117,7 +161,7 @@ const Search = ({ navigation }) => {
     const renderItem = ({ item, index }) => {
         return (
             <TouchableOpacity
-                onPress={() => setModalVisible(true)}
+                onPress={() => handleItemClick(item.id)}
                 key={index}
                 style={{
                     flexDirection: 'row',
@@ -209,7 +253,7 @@ const Search = ({ navigation }) => {
                 <FlatList
                     data={filteredDonors}
                     renderItem={renderItem}
-                    keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={(item) => item?.id?.toString()}
                     contentContainerStyle={{
                         flexGrow: 1,
                     }}
@@ -219,6 +263,17 @@ const Search = ({ navigation }) => {
     }
 
     function renderDonorsDetails() {
+        if (!modalVisible) return <></>
+
+        const donor = users.find((_user) => _user.id === currentUserId)
+
+        if (!donor) {
+            return Alert.alert(`Donor not found for ID ${currentUserId}`)
+        }
+
+        console.log('Coordinates ', donor.coordinates)
+        console.log('Number form ', Number(donor.coordinates[0]))
+
         return (
             <Modal
                 animationType="slide"
@@ -226,7 +281,7 @@ const Search = ({ navigation }) => {
                 visible={modalVisible}
             >
                 <TouchableWithoutFeedback
-                    onPress={() => setModalVisible(false)}
+                    onLongPress={() => setModalVisible(false)}
                 >
                     <View
                         style={{
@@ -248,7 +303,7 @@ const Search = ({ navigation }) => {
                             }}
                         >
                             <Image
-                                source={images.user2}
+                                source={donor?.image}
                                 resizeMode="contain"
                                 style={{
                                     height: 120,
@@ -265,7 +320,7 @@ const Search = ({ navigation }) => {
                                         marginTop: 24,
                                     }}
                                 >
-                                    Muhammed Sami
+                                    {donor?.name}
                                 </Text>
                                 <View
                                     style={{
@@ -284,7 +339,7 @@ const Search = ({ navigation }) => {
                                             marginLeft: 8,
                                         }}
                                     >
-                                        Mirpur 10, Dhaka
+                                        {donor?.location}
                                     </Text>
                                 </View>
                             </View>
@@ -367,7 +422,7 @@ const Search = ({ navigation }) => {
                                                 color: COLORS.secondaryBlack,
                                             }}
                                         >
-                                            AB+
+                                            {donor?.bloodType}
                                         </Text>
                                     </View>
                                 </View>
@@ -382,7 +437,11 @@ const Search = ({ navigation }) => {
                                 }}
                             >
                                 <TouchableOpacity
-                                    onPress={() => console.log('Pressed')}
+                                    onPress={() => {
+                                        Linking.openURL(
+                                            `tel://${donor?.mobile}`
+                                        )
+                                    }}
                                     style={{
                                         backgroundColor: COLORS.secondary,
                                         width: 150,
@@ -451,13 +510,30 @@ const Search = ({ navigation }) => {
                                         width: SIZES.width - 44,
                                         marginVertical: 22,
                                     }}
-                                    intialRegion={{
-                                        latitude: 17.78825,
-                                        longitude: -122.4324,
-                                        latitudeDelta: 0.09222,
-                                        longitudeDelta: 0.0421,
+                                    region={{
+                                        latitude: Number(
+                                            donor?.coordinates?.[0]
+                                        ),
+                                        longitude: Number(
+                                            donor?.coordinates?.[1]
+                                        ),
+                                        latitudeDelta: 0.0922,
+                                        longitudeDelta: 0.0921,
                                     }}
-                                />
+                                >
+                                    <Marker
+                                        key="0"
+                                        coordinate={{
+                                            latitude: Number(
+                                                donor?.coordinates?.[0]
+                                            ),
+                                            longitude: Number(
+                                                donor?.coordinates?.[1]
+                                            ),
+                                        }}
+                                        title={donor.name}
+                                    />
+                                </MapView>
                             </View>
                         </View>
                     </View>

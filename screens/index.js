@@ -10,7 +10,10 @@ import Profile from './Profile'
 import Search from './Search'
 import DonationRequest from './DonationRequest'
 import Report from './Report'
-import ChatComponent from './ChatComponent'
+import Assistant from './Assistant'
+import Campaign from './Campaign'
+import Donates from './Donates'
+import CampaignRegister from './CampaignRegister'
 
 export {
     GetStarted,
@@ -25,5 +28,8 @@ export {
     Search,
     DonationRequest,
     Report,
-    ChatComponent,
+    Assistant,
+    Campaign,
+    Donates,
+    CampaignRegister,
 }

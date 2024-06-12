@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "BloodMates",
-    "slug": "BloodMates",
+    "name": "BloodDonate",
+    "slug": "bloodmates",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -21,14 +21,29 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.vmw.bloodmates",
+      "versionCode": 1,
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
       "expo-font",
-      "expo-build-properties"
-    ]
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/logo.png",
+          "color": "#ffffff"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "f69d17a6-8cb7-4e75-9c85-05929e627392"
+      }
+    },
+    "owner": "bloodmates"
   }
 }

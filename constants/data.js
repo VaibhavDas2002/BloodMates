@@ -3,7 +3,7 @@ import { images, icons } from '../constants'
 export const donors = [
     {
         id: '1',
-        image: images.user1,
+        image: images.user,
         name: 'Yasin Hossain',
         location: 'Mohammedpur',
         bloodType: 'A+',
@@ -47,28 +47,34 @@ export const donors = [
 
 export const categories = [
     {
-        icon: icons.categoryIcon1,
-        title: 'Find Donors',
+        icon: icons.categoryIcon3,
+        title: 'Donation Request',
+        screen: 'DonationRequest',
     },
     {
         icon: icons.categoryIcon2,
-        title: 'Donates',
+        title: 'Blood Request',
+        screen: 'Donate Blood',
     },
     {
-        icon: icons.categoryIcon3,
-        title: 'Order Blood',
+        icon: icons.categoryIcon1,
+        title: 'View Donors',
+        screen: 'Search',
     },
     {
         icon: icons.categoryIcon4,
         title: 'Assistant',
+        screen: 'Assistant',
     },
     {
         icon: icons.categoryIcon5,
         title: 'Report',
+        screen: 'Report',
     },
     {
         icon: icons.categoryIcon6,
-        title: 'Campain',
+        title: 'Campaign',
+        screen: 'Campaign',
     },
 ]
 
@@ -135,5 +141,16 @@ export const features = [
         id: '6',
         substance: '276 bL',
         volume: 'Platelets',
+    },
+]
+
+export const campaign = [
+    {
+        address: 'Suri Birbhum',
+        date: 'May 23, 2024 at 12:00:00 AM UTC+5:30',
+        mobile: '6297977842',
+        note: 'ds',
+        orgName: 'Vaibhav',
+        orgrName: 'BIET',
     },
 ]
